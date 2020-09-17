@@ -84,12 +84,59 @@
                               <div class="col-md-10 ml-5">
                                   <input type="text" name="" id="" class="px-2 year" placeholder="Properties purchased in that year">
                               </div>
-                            </div> 
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Editable table -->
+        <div class="card mt-4">
+          <div class="card-body">
+            <div id="table" class="table-editable">
+              <span class="table-add float-right mb-3 mr-2"><a href="#!" class="text-success"><i
+                    class="fas fa-plus fa-2x" aria-hidden="true"></i></a></span>
+              <table class="table table-bordered table-responsive-md table-striped text-center">
+                <thead>
+                  <tr>
+                    <th>Year</th>
+                    <th class="text-center">Properties purchased in that year</th>
+                    <th class="text-center">Cash Flow-funded purchases</th>
+                    <th class="text-center">Cumulative Properties Owned In Each Year</th>
+                    <th class="text-center">Personal Cash Investment (approx)</th>
+                    <th class="text-center">Portfolio Cash Re-Investment</th>
+                    <th class="text-center">Projected Portfolio Total Value</th>
+                    <th class="text-center">Projected Total Equity</th>
+                    <th class="text-center">Projected Monthly Cash Flow</th>
+                    <th class="text-center">Cumulative Cash Flow (Incl. Vacancy)</th>
+                    <th class="text-center">Cumulative Cash Flow (minus reinvestments)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="pt-3-half" contenteditable="true">2020</td>
+                    <td class="pt-3-half" contenteditable="true">0</td>
+                    <td class="pt-3-half" contenteditable="true">0</td>
+                    <td class="pt-3-half" contenteditable="true">0</td>
+                    <td class="pt-3-half" contenteditable="true">0</td>
+                    <td class="pt-3-half" contenteditable="true">0</td>
+                    <td class="pt-3-half" contenteditable="true">0</td>
+                    <td class="pt-3-half" contenteditable="true">0</td>
+                    <td class="pt-3-half" contenteditable="true">0</td>
+                    <td class="pt-3-half" contenteditable="true">0</td>
+                    <td class="pt-3-half" contenteditable="true">0</td>
+                    <td class="pt-3-half">
+                      <span class="table-up"><a href="#!" class="indigo-text"><i class="fas fa-long-arrow-alt-up"
+                            aria-hidden="true"></i></a></span>
+                      <span class="table-down"><a href="#!" class="indigo-text"><i class="fas fa-long-arrow-alt-down"
+                            aria-hidden="true"></i></a></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- Editable table -->
         <!-- <div class="container mt-5 mb-5">
             <div class="row">
                 <form>
@@ -162,52 +209,5 @@
                   </form>
             </div>
         </div> -->
-        <div id="classModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="classInfo" aria-hidden="true">
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title" id="classModalLabel">
-                   Class Info
-                </h4>
-              </div>
-              <div class="modal-body">
-                <table id="classTable" class="table table-bordered">
-                  <thead>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Starting Year</td>
-                      <td>Properties purchased in that year</td>
-                      <td>Cash Flow-funded purchases</td>
-                      <td>Cumulative Properties Owned In Each Year</td>
-                      <td>Personal Cash Investment (approx)</td>
-                      <td>Portfolio Cash Re-Investment</td>
-                      <td>Projected Portfolio Total Value</td>
-                      <td>Projected Total Equity</td>
-                      <td>Projected Monthly Cash Flow</td>
-                      <td>Cumulative Cash Flow (Incl. Vacancy)</td>
-                      <td>Cumulative Cash Flow (minus reinvestments)</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <table id="finalTable" class="table table-bordered">
-                  <thead>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Total Year</td>
-                      <td>Total 'End State' Properties</td>
-                      <td>Total 'Personal' Cash Investment</td>
-                      <td>Total 'Portolio' Cash Investment</td>
-                      <td>Total 'End State' Portfolio Gross Value</td>
-                      <td>Total 'End State' Portfolio Equity</td>
-                      <td>Total 'End State' Monthly Cash Flow</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-  </body>
+    </body>
 </html>

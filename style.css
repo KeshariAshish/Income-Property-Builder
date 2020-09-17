@@ -51,10 +51,7 @@ h3{
     margin-left: 13px!important;
 }
 
-#classModal {}
-
-.modal-body {
-  overflow-x: auto;
+.card{
+    width: 100%;
 }
-
 
