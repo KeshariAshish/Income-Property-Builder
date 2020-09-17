@@ -56,7 +56,6 @@ const show=()=>{
     let minus=document.getElementById("minus");
     minus.value=cumulativeccf.value;
     minus.innerHTML=minus.value.toFixed(2);
-    
-     
+      
 }
 ppty.addEventListener('change',show);
