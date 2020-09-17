@@ -51,7 +51,13 @@ h3{
     margin-left: 13px!important;
 }
 
-.card{
-    width: 100%;
+.proper{
+    font-size: 13px;
+    margin-left: 64px!important;
 }
+
+.content{
+    margin-left: 13px!important;
+}
+
 

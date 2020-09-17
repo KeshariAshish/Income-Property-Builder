@@ -1,4 +1,4 @@
-    <!doctype html>
+<!doctype html>
     <html lang="en">
     <head>
         <!-- Required meta tags -->
@@ -53,38 +53,39 @@
                         <div class="row">
                             <label class="label col-md-6 control-label ml-5 text-white">Monthly Cash Flow</label>
                             <div class="col-md-10 ml-5">
-                                <input type="text" name="" id="" class="px-2" placeholder="Monthly Cash">
+                                <input type="text" name="" id="mcf" class="px-2" placeholder="Monthly Cash">
                             </div>
                         </div>
                         <div class="row">
                             <label class="label col-md-6 control-label ml-5 text-white mt-1">Annual Cash Flow Growth %</label>
                             <div class="col-md-10 ml-5">
-                                <input type="text" name="" id="" class="px-2" placeholder="Annual Cash Flow Growth %">
+                                <input type="text" name="" id="acfg" class="px-2" placeholder="Annual Cash Flow Growth %">
                             </div>
                         </div>
                         <div class="row">
                             <label class="label col-md-6 control-label ml-5 text-white mt-1">Annual Value Growth %</label>
                             <div class="col-md-10 ml-5">
-                                <input type="text" name="" id="" class="px-2" placeholder="Annual Value Growth %">
+                                <input type="text" name="" id="avgp" class="px-2" placeholder="Annual Value Growth %">
                             </div>
                         </div>
-                        <div class="row">
-                            <label class="label col-md-6 control-label ml-5 text-white mt-1">Property Acquisition Cost</label>
-                            <div class="col-md-10 ml-5">
-                                <input type="text" name="" id="" class="px-2" placeholder="Property Acquisition Cost Assumption">
-                            </div>
-                        </div>
+                       
                         <div class="row">
                             <label class="label col-md-6 control-label ml-5 text-white mt-1">Property Acquisition Value</label>
                             <div class="col-md-10 ml-5">
-                                <input type="text" name="" id="" class="px-2" placeholder="Property Acquisition Value Assumption">
+                                <input type="text" name="" id="pav" class="px-2" placeholder="Property Acquisition Value Assumption">
                             </div>
                             <div class="row">
                               <label class="label col-md-6 control-label ml-5 text-white mt-1 property">Properties purchased in that year</label>
                               <div class="col-md-10 ml-5">
-                                  <input type="text" name="" id="" class="px-2 year" placeholder="Properties purchased in that year">
+                                  <input type="text" name="" id="ppty" class="px-2 year" placeholder="Properties purchased in that year">
                               </div>
-                        </div>
+                            </div>
+                            <div class="row">
+                              <label class="label col-md-6 control-label ml-5 text-white mt-1 proper">Property Acquisition Cost</label>
+                              <div class="col-md-10 ml-5">
+                                  <input type="text" name="" id="paca" class="px-2 content" placeholder="Property Acquisition Cost Assumption">
+                              </div>
+                          </div>
                     </div>
                 </div>
             </div>
@@ -113,17 +114,18 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td class="pt-3-half" contenteditable="true">2020</td>
-                    <td class="pt-3-half" contenteditable="true">0</td>
-                    <td class="pt-3-half" contenteditable="true">0</td>
-                    <td class="pt-3-half" contenteditable="true">0</td>
-                    <td class="pt-3-half" contenteditable="true">0</td>
-                    <td class="pt-3-half" contenteditable="true">0</td>
-                    <td class="pt-3-half" contenteditable="true">0</td>
-                    <td class="pt-3-half" contenteditable="true">0</td>
-                    <td class="pt-3-half" contenteditable="true">0</td>
-                    <td class="pt-3-half" contenteditable="true">0</td>
-                    <td class="pt-3-half" contenteditable="true">0</td>
+                    <td class="pt-3-half" id="year" contenteditable="true">2020</td>
+                    <td class="pt-3-half" id="purchased" contenteditable="true">0</td>
+                    <td class="pt-3-half" id="purchases" contenteditable="true">0</td>
+                    <td class="pt-3-half" id="cumulative" contenteditable="true">0</td>
+                    <td class="pt-3-half" id="personal" contenteditable="true">0</td>
+                    <td class="pt-3-half" id="portfolio" contenteditable="true">0</td>
+                    <td class="pt-3-half" id="value" contenteditable="true">0</td>
+                    <td class="pt-3-half" id="equity" contenteditable="true">0</td>
+                    <td class="pt-3-half" id="flow" contenteditable="true">0</td>
+                    <td class="pt-3-half" id="cumulativeccf" contenteditable="true">0</td>
+                    <td class="pt-3-half" id="minus" contenteditable="true">0</td>
+                    
                     <td class="pt-3-half">
                       <span class="table-up"><a href="#!" class="indigo-text"><i class="fas fa-long-arrow-alt-up"
                             aria-hidden="true"></i></a></span>
@@ -209,5 +211,6 @@
                   </form>
             </div>
         </div> -->
+        <script src="calculate.js"></script>
     </body>
 </html>
