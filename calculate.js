@@ -36,16 +36,16 @@ const show=()=>{
     personal.value=pptys*Number(paca.value).toFixed(2);
     
     let values=document.getElementById("value");
-    values.innerHTML=pptys*Number(paca.value);
-    values.value=pptys*Number(paca.value).toFixed(2);
+    values.innerHTML=pptys*Number(pav.value);
+    values.value=pptys*Number(pav.value).toFixed(2);
 
 
     let equity=document.getElementById("equity");
-    equity.value=(values.value-cumulative.value)*Number(pav.value)*0.8;
+    equity.value=values.value-(cumulative.value*pav.value*0.8);
     equity.innerHTML=equity.value.toFixed(2);
 
     let flow=document.getElementById("flow");
-    flow.value=cumulative.value*(Number(mcf.value)*(1+Number(acfg.value)))**(pptys-1);
+    flow.value=cumulative.value*(mcf.value*(1+(pav.value/5))**(1-1));
     flow.innerHTML=(flow.value).toFixed(2);
     
 
@@ -53,9 +53,14 @@ const show=()=>{
     cumulativeccf.value=flow.value*11;
     cumulativeccf.innerHTML=cumulativeccf.value.toFixed(2);
     
+    let purchases=document.getElementById("purchases");
+    purchases.value=0;
+    
+
     let minus=document.getElementById("minus");
-    minus.value=cumulativeccf.value;
+    minus.value=cumulativeccf.value-(purchases.value*paca.value);
     minus.innerHTML=minus.value.toFixed(2);
+    
     
       
 }
