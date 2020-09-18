@@ -91,15 +91,12 @@
             </div>
         </div>
         <!-- Editable table -->
-        <div class="card mt-4">
-          <div class="card-body">
-            <div id="table" class="table-editable">
-              <span class="table-add float-right mb-3 mr-2"><a href="#!" class="text-success"><i
-                    class="fas fa-plus fa-2x" aria-hidden="true"></i></a></span>
-              <table class="table table-bordered table-responsive-md table-striped text-center">
+        
+            <div id="table" class="table-editable mt-3">
+              <table class="table table-bordered table-responsive-md table-dark">
                 <thead>
                   <tr>
-                    <th>Year</th>
+                    <th class="text-center">Year</th>
                     <th class="text-center">Properties purchased in that year</th>
                     <th class="text-center">Cash Flow-funded purchases</th>
                     <th class="text-center">Cumulative Properties Owned In Each Year</th>
@@ -125,20 +122,55 @@
                     <td class="pt-3-half" id="flow" contenteditable="true">0</td>
                     <td class="pt-3-half" id="cumulativeccf" contenteditable="true">0</td>
                     <td class="pt-3-half" id="minus" contenteditable="true">0</td>
-                    
-                    <td class="pt-3-half">
-                      <span class="table-up"><a href="#!" class="indigo-text"><i class="fas fa-long-arrow-alt-up"
-                            aria-hidden="true"></i></a></span>
-                      <span class="table-down"><a href="#!" class="indigo-text"><i class="fas fa-long-arrow-alt-down"
-                            aria-hidden="true"></i></a></span>
-                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
+    <div id="table" class="table-editable mt-3 refi">
+      <table class="table table-bordered table-responsive-md table-dark">
+        <thead>
+          <tr>
+            <th class="text-center">Year 12 REFI & RE-INVESTMENT</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center">2020</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="table" class="table-editable mt-3 more-year">
+      <table class="table table-bordered table-responsive-md table-dark">
+        <h5 class="text-center text-white">24 +12 More Years</h5>
+        <thead>
+          <tr>
+            <th class="text-center">Total 'End State' Properties</th>
+            <th class="text-center">Total 'Personal' Cash Investment</th>
+            <th class="text-center">Total 'Portolio' Cash Investment</th>
+            <th class="text-center">Total 'End State' Portfolio Gross Value</th>
+            <th class="text-center">Total 'End State' Portfolio Equity</th>
+            <th class="text-center">Total 'End State' Monthly Cash Flow</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" id="end-state" contenteditable="true">2</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+     
+       
         <script src="calculate.js"></script>
     </body>
 </html>
