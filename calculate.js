@@ -44,8 +44,12 @@ const show=()=>{
     equity.value=values.value-(cumulative.value*pav.value*0.8);
     equity.innerHTML=equity.value.toFixed(2);
 
+    let count_year=document.getElementById("count_year");
+    count_year.value=1;
+        
+
     let flow=document.getElementById("flow");
-    flow.value=cumulative.value*(mcf.value*(1+(pav.value/5))**(1-1));
+    flow.value=cumulative.value*(mcf.value*(1+(pav.value/5))**(count_year.value-1));
     flow.innerHTML=(flow.value).toFixed(2);
     
 
