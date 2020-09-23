@@ -205,7 +205,7 @@ const secondLastTable = () => {
     let mcf = document.getElementById("mcf");
     mcf = Number(mcf.value);
     let arr2 = [];
-     arr2.push(Number(Math.round(arr[arr.length - 1][5] * 0.71 - (arr[arr.length - 1][5] - arr[arr.length - 1][6]) / paca, 0)).toFixed(2));
+    arr2.push(Number(Math.round(arr[arr.length - 1][5] * 0.71 - (arr[arr.length - 1][5] - arr[arr.length - 1][6])) / paca, 0).toFixed(2));
     arr2.push( Number(arr2[0] * paca).toFixed(2));
     arr2.push(Number(arr2[0] * pav).toFixed(2));
     arr2.push(Number(arr2[2] * 0.2).toFixed(2));
