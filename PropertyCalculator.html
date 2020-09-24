@@ -74,12 +74,12 @@
                             <div class="col-md-10 ml-5">
                                 <input type="text" name="" id="pav" class="px-2" placeholder="Property Acquisition Value Assumption">
                             </div>
-                            <div class="row">
+                            <!-- <div class="row">
                               <label class="label col-md-6 control-label ml-5 text-white mt-1 property">Properties purchased in that year</label>
                               <div class="col-md-10 ml-5">
                                   <input type="text" name="" id="ppty" class="px-2 year" placeholder="Properties purchased in that year">
                               </div>
-                            </div>
+                            </div> -->
                             <div class="row">
                               <label class="label col-md-6 control-label ml-5 text-white mt-1 proper">Property Acquisition Cost</label>
                               <div class="col-md-10 ml-5">
@@ -93,7 +93,7 @@
         <!-- Editable table -->
         
             <div id="table" class="table-editable mt-3 first">
-              <table  class="table table-bordered table-responsive-md table-dark">
+              <table  id = "mytable" class="table table-bordered table-responsive-md table-dark">
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -110,7 +110,7 @@
                     <th class="text-center">Cumulative Cash Flow (minus reinvestments)</th>
                   </tr>
                 </thead>
-                <tbody id="tabular">
+                <!-- <tbody id="tabular">
                   <tr>
                     <td class="pt-3 half" id="count_year">1</td>
                     <td class="pt-3-half" id="year" contenteditable="false">2020</td>
@@ -125,7 +125,7 @@
                     <td class="pt-3-half" id="cumulativeccf" contenteditable="false">0</td>
                     <td class="pt-3-half" id="minus" contenteditable="false">0</td>
                   </tr>
-                </tbody>
+                </tbody> -->
               </table>
             </div>
           </div>
@@ -138,20 +138,20 @@
       <table class="table table-bordered table-responsive-md table-dark">
         <thead>
           <tr>
-            <th class="text-center">Properties purchased in that year</th>
-            <th class="text-center">Portfolio Cash Re-Investment</th>
-            <th class="text-center">Projected Portfolio Total Value</th>
-            <th class="text-center">Projected Total Equity</th>
-            <th class="text-center">Projected Monthly Cash Flow</th>
+            <th class="text-center">First</th>
+            <th class="text-center">Second</th>
+            <th class="text-center">Third</th>
+            <th class="text-center">Fourth</th>
+            <th class="text-center">Fifth</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td class="text-center" id="first" contenteditable="false"></td>
-            <td class="text-center" id="sec" contenteditable="false"></td>
-            <td class="text-center" id="third" contenteditable="false"></td>
-            <td class="text-center" id="fourth" contenteditable="false"></td>
-            <td class="text-center" id="fifth" contenteditable="false"></td>
+            <td class="text-center" id="first" contenteditable="false">0</td>
+            <td class="text-center" id="sec" contenteditable="false">0</td>
+            <td class="text-center" id="third" contenteditable="false">0</td>
+            <td class="text-center" id="fourth" contenteditable="false">0</td>
+            <td class="text-center" id="fifth" contenteditable="false">0</td>
           </tr>
         </tbody>
       </table>
@@ -171,12 +171,12 @@
         </thead>
         <tbody>
           <tr>
-            <td class="text-center" id="end_state" contenteditable="true"></td>
-            <td class="text-center" id="personal_cash" contenteditable="false"></td>
-            <td class="text-center" id="portfolio_cash" contenteditable="false"></td>
-            <td class="text-center" id="portfolio_gross" contenteditable="false"></td>
-            <td class="text-center" id="portfolio_equity" contenteditable="false"></td>
-            <td class="text-center" id="monthly_cash" contenteditable="false"></td>
+            <td class="text-center" id="end_state" contenteditable="true">0</td>
+            <td class="text-center" id="personal_cash" contenteditable="false">0</td>
+            <td class="text-center" id="portfolio_cash" contenteditable="false">0</td>
+            <td class="text-center" id="portfolio_gross" contenteditable="false">0</td>
+            <td class="text-center" id="portfolio_equity" contenteditable="false">0</td>
+            <td class="text-center" id="monthly_cash" contenteditable="false">0</td>
           </tr>
         </tbody>
       </table>
