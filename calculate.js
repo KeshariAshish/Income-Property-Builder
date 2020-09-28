@@ -1,399 +1,876 @@
-let arr = [];
-const calculatePavValue = (event, psg) => {
-    // console.log(psg);
-    psg = Number(psg);
-    // console.log(typeof(psg));
-    let v4 = psg * 0.24;
-    let paca = document.getElementById("paca");
-    paca.value = v4.toFixed(2);
-    createTable();
-    //show(event, 0);
+const SNO = 'sno';
+const PROP_YEAR = 'year';
+const PROP_PURCHASED_YEAR = 'prop_purchased_year';
+const CASH_FLOW_FUND_PROP = 'cash_flow_fund_prop';
+const CUMULATIVE_OWNED_EACH_YEAR = 'cumulative_owned_each_year';
+const PERSONAL_INVESTMENT = 'personal_investment';
+const PORTFOLIO_CASH_REINVESTMENT = 'portfolio_cash_reinvestment';
+const PROJECTED_PORTFOLIO_TOTAL_VALUE = 'projected_portfolio_total_value';
+const PROJECTED_TOTAL_EQUITY = 'projected_total_equity';
+const PROJECTED_MONTHLY_CASH_FLOW = 'projected_monthly_cash_flow';
+const CUMUL_CASH_FLOW_VAC = 'cumul_cash_flow_vac';
+const CUMUL_CASH_FLOW_MINUS_REINVEST = 'cumul_cash_flow_minus_reinvest';
+
+const columns = [
+    SNO,
+    PROP_YEAR,
+    PROP_PURCHASED_YEAR,
+    CASH_FLOW_FUND_PROP,
+    CUMULATIVE_OWNED_EACH_YEAR,
+    PERSONAL_INVESTMENT,
+    PORTFOLIO_CASH_REINVESTMENT,
+    PROJECTED_PORTFOLIO_TOTAL_VALUE,
+    PROJECTED_TOTAL_EQUITY,
+    PROJECTED_MONTHLY_CASH_FLOW,
+    CUMUL_CASH_FLOW_VAC,
+    CUMUL_CASH_FLOW_MINUS_REINVEST,
+];
+let dataStore = {} // array of object to store already calculated value
+
+var data = [
+    { x: "White", value: 223553265 },
+    { x: "Black or African American", value: 38929319 },
+    { x: "American Indian and Alaska Native", value: 2932248 },
+    { x: "Asian", value: 14674252 },
+    { x: "Native Hawaiian and Other Pacific Islander", value: 540013 },
+    { x: "Some Other Race", value: 19107368 },
+    { x: "Two or More Races", value: 9009073 }
+];
+
+window.chartColors = {
+    red: 'rgb(255, 99, 132)',
+    orange: 'rgb(255, 159, 64)',
+    yellow: 'rgb(255, 205, 86)',
+    green: 'rgb(75, 192, 192)',
+    blue: 'rgb(54, 162, 235)',
+    purple: 'rgb(153, 102, 255)',
+    grey: 'rgb(201, 203, 207)'
 };
-// $('#edit').on('keyup', (e) => {
-//     alert('changed')
-// });
-const createTable = () => {
-    let table = document.getElementById("mytable");
-    let i, j;
-    let year = 2020;
-    for (i = 1; i <= 12; i++) {
-        var row = table.insertRow(i);
-        for (j = 0; j < 12; j++) {
-            var cell = row.insertCell(j);
-            if (j == 0) {
-                cell.innerHTML = i;
-            }
-            else if (j == 1) {
-                cell.innerHTML = year++;
-            } else
-                cell.innerHTML = 0;
-            if (j == 2) {
-               // cell.id = "edit"
-                cell.setAttribute("contenteditable", true);
-              
-                //cell.setAttribute("onchange", "javascript:populateTable();");
 
-                cell.addEventListener("blur", (event) => { populateTable(); });
+
+const rows = 12;
+const start_year = 2020;
+let monthly_cash_flow = Number($('#monthly_cash').val());
+let annual_cash_flow = Number($('#annual_cash_flow').val());
+let annual_value_growth = Number($('#annual_value_growth').val());
+let property_acquisition_value = Number($('#property_acquisition_value').val());
+let property_acquisition_cost = Number($('#property_acquisition_cost').val());
+
+
+function refreshDataStore() {
+    let start_num = 1;
+    for (let year = start_year; year < start_year + rows; year++, start_num++) {
+        dataStore[year] = dataStore[year] || {};
+        for (let column of columns) {
+            if (column === SNO) {
+                dataStore[year][column] = start_num;
+            } else if (column === PROP_YEAR) {
+                dataStore[year][column] = year;
+            } else if (column === PROP_PURCHASED_YEAR) {
+                dataStore[year][column] = dataStore[year][column] || 0;
+            } else {
+                dataStore[year][column] = 0
             }
         }
     }
 }
 
-const populateTable = () => {
-    let table = document.getElementById("mytable");
-    let i, j;
-    arr = [];
-    for (i = 1; i <= 12; i++) {
-        var row = table.rows[i];
-        if (i == 1) {
-            populateFirstTable(row);
+function setInStore(column, year, value) {
+    dataStore[year][column] = value;
+}
+
+function getFromStore(column, year) {
+    return dataStore[year][column];
+}
+
+refreshDataStore();
+/** Build the table **/
+const table = $('#tabular');
+for (let year in dataStore) {
+    let tr = $('<tr>').attr('class', year);
+    let columns = dataStore[year]
+    for (let column in columns) {
+        let attrs = {
+            id: column + '-' + year,
+            class: column,
+        };
+        let td = $('<td>')
+        if (column == PROP_PURCHASED_YEAR) {
+            td.html($('<input type="number">').attr(attrs).val(columns[column]))
         } else {
-            popluateOtherRow(row,i);
+            td.attr(attrs).text(columns[column]);
+        }
+        tr.append(td);
+    }
+    table.append(tr);
+}
+
+/** Attach events **/
+$('#property_acquisition_value').change(function () {
+    property_acquisition_value = Number($(this).val() || 0);
+    let v4 = property_acquisition_value * 0.24;
+    property_acquisition_cost = v4.toFixed(2);
+    $('#property_acquisition_cost').val(property_acquisition_cost);
+    calculatedInvestment();
+});
+
+$('#monthly_cash').change(function () {
+    monthly_cash_flow = Number($(this).val() || 0);
+    calculatedInvestment();
+});
+
+
+$('#annual_cash_flow').change(function () {
+    annual_cash_flow = Number($(this).val() || 0);
+    calculatedInvestment();
+});
+
+$('#annual_value_growth').change(function () {
+    annual_value_growth = Number($(this).val() || 0);
+    calculatedInvestment();
+});
+
+$(document).on('change', '.' + PROP_PURCHASED_YEAR, function () {
+    let props = $(this).attr('id').split('-');
+    const column = props[0]
+    const year = props[1]
+    setInStore(column, year, Number($(this).val()));
+    calculatedInvestment();
+});
+
+function calculatedInvestment() {
+    if (
+        !monthly_cash_flow ||
+        !annual_cash_flow ||
+        !annual_value_growth ||
+        !property_acquisition_value ||
+        !property_acquisition_cost) {
+        return
+    }
+    refreshDataStore();
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    for (let year = start_year; year < start_year + rows; year++) {
+        for (let column of columns) {
+            let id = column + '-' + year;
+            let cell = $('#' + id);
+            if (cell.is('input')) {
+                cell.val(parseInt(getValue(column, year)))
+            } else {
+                // $ sign for first table
+                if (column !== 'sno' && column !== 'year' && column !== 'PROP_PURCHASED_YEAR'.toLowerCase()  && column !== 'CASH_FLOW_FUND_PROP'.toLowerCase() 
+                    && column !== 'CUMULATIVE_OWNED_EACH_YEAR'.toLowerCase() )
+                    cell.text(formatter.format(parseInt(getValue(column, year))));
+                else{
+                    cell.text(parseInt(getValue(column, year)));
+                }
+            }
         }
     }
-    let arr2 = secondLastTable();
-    lastTable(arr2);
+
+    $('#properties-12').text(get12YearProperties())
+
+    $('#cash-reinvestment-12').text(get12YearReinvestment())
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    var amount = document.getElementById('cash-reinvestment-12').innerHTML;
+    document.getElementById('cash-reinvestment-12').innerHTML = formatter.format(amount);
+
+    $('#portfolio-value-12').text(get12YearPortfolioValue())
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    var amount = document.getElementById('portfolio-value-12').innerHTML;
+    document.getElementById('portfolio-value-12').innerHTML = formatter.format(amount);
+
+    $('#projected-total-equity-12').text(get12YearEquity())
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    var amount = document.getElementById('projected-total-equity-12').innerHTML;
+    document.getElementById('projected-total-equity-12').innerHTML = formatter.format(amount);
+
+    $('#projected-month-cash-12').text(get12YearMonthlyCash())
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    var amount = document.getElementById('projected-month-cash-12').innerHTML;
+    document.getElementById('projected-month-cash-12').innerHTML = formatter.format(amount);
+
+    $('#properties-24').text(get24YearProperties())
+    $('#cash-funded-24').text(get24YearCashFundedProperties())
+    $('#total-properties-24').text(get24YearTotalProperties())
+    $('#total-personal-investment-24').text(get24YearPersonalInvestment())
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    var amount = document.getElementById('total-personal-investment-24').innerHTML;
+    document.getElementById('total-personal-investment-24').innerHTML = formatter.format(amount);
+
+    $('#total-portfolio-investment-24').text(get24YearPortfolioInvestment())
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    var amount = document.getElementById('total-portfolio-investment-24').innerHTML;
+    document.getElementById('total-portfolio-investment-24').innerHTML = formatter.format(amount);
+
+    $('#total-portfolio-gross-24').text(get24YearPortfolioGross())
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    var amount = document.getElementById('total-portfolio-gross-24').innerHTML;
+    document.getElementById('total-portfolio-gross-24').innerHTML = formatter.format(amount);
+
+    $('#total-portfolio-equity-24').text(get24YearPortfolioEquity())
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    var amount = document.getElementById('total-portfolio-equity-24').innerHTML;
+    document.getElementById('total-portfolio-equity-24').innerHTML = formatter.format(amount);
+
+    $('#total-monthly-cash-24').text(get24YearProjectedMonthlyCash())
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    var amount = document.getElementById('total-monthly-cash-24').innerHTML;
+    document.getElementById('total-monthly-cash-24').innerHTML = formatter.format(amount);
+
 }
 
-let pav = document.getElementById("pav");
+String.prototype.ucwords = function () {
+    str = this.toLowerCase();
+    return str.replace(/(^([a-zA-Z\p{M}]))|([ -][a-zA-Z\p{M}])/g, function (s) {
+        return s.toUpperCase();
+    });
+};
 
-pav.addEventListener('change', (event) => {
-    calculatePavValue(event, pav.value);
-});
-let mcf = document.getElementById("mcf");
-let acfg = document.getElementById("acfg");
-let avgp = document.getElementById("avgp");
-
-// purchased.addEventListener('change', (event) => {
-//     show(event, purchased.value);
-// });
-const populateFirstTable = (row) => {
-    let arr1 = [];
-    let purchased = Number(row.cells[2].innerHTML);
-    // purchased.innerHTML = pptys;
-    // purchased.value = pptys;
-    arr1.push(purchased);
-    arr1.push(0);
-
-    let cumulative = (row.cells[4]);
-    cumulative.innerHTML = purchased;
-    cumulative.value = purchased;
-    arr1.push(cumulative.value);
-
-    let paca = document.getElementById("paca");
-
-    let personal = (row.cells[5]);
-    personal.innerHTML = purchased * Number(paca.value);
-    personal.value = purchased * Number(paca.value).toFixed(2);
-    arr1.push(personal.value);
-    arr1.push(0);
-
-    let values = (row.cells[7]);
-    values.innerHTML = purchased * Number(pav.value);
-    values.value = purchased * Number(pav.value).toFixed(2);
-    arr1.push(values.value);
-
-
-    let equity = row.cells[8];
-    equity.value = values.value - (cumulative.value * pav.value * 0.8);
-    equity.innerHTML = equity.value.toFixed(2);
-    arr1.push(equity.value);
-
-    let count_year = (row.cells[0]);
-    count_year.value = 1;
-
-
-    let flow = row.cells[9];
-    flow.value = cumulative.value * (mcf.value * (1 + (pav.value / 5)) ** (count_year.value - 1));
-    flow.innerHTML = (flow.value).toFixed(2);
-    arr1.push(flow.value);
-
-
-    let cumulativeccf = row.cells[10];
-    cumulativeccf.value = flow.value * 11;
-    cumulativeccf.innerHTML = cumulativeccf.value.toFixed(2);
-    arr1.push(cumulativeccf.value);
-
-    let purchases = row.cells[3];
-    purchases.value = 0;
-
-    let minus =row.cells[11];
-    minus.value = cumulativeccf.value - (purchases.value * paca.value);
-    minus.innerHTML = minus.value.toFixed(2);
-    arr1.push(minus.value);
-    arr.push(arr1);
-}
-const popluateOtherRow = (row,i) => {
-    let arr2 = [];
-    arr2.push(Number(row.cells[2].innerHTML));
-
-    let cash = cashFlow(i);
-    row.cells[3].innerHTML = cash;
-    arr2.push(cash);
-
-    let cumulatives = cumulativesyear(Number(arr2[0] + arr2[1]),i);
-    row.cells[4].innerHTML = cumulatives;
-    arr2.push(cumulatives);
-
-    let purch = purcha(arr2[0]);
-    row.cells[5].innerHTML = purch;
-    arr2.push(Number(purch));
-
-    let port = portfo(arr2[1]);
-    row.cells[6].innerHTML = port;
-    arr2.push(Number(port));
-
-    let project = projected(arr2[0], arr2[1],i);
-    row.cells[7].innerHTML = project;
-    arr2.push(Number(project));
-
-
-    let equi = equit(arr2[2], arr2[5]);
-    row.cells[8].innerHTML = equi;
-    arr2.push(Number(equi));
-
-
-    let month = monthly(arr2[0], arr2[1],i);
-    row.cells[9].innerHTML = month;
-    arr2.push(Number(month));
-
-    let vacan = vacancy(arr2[7],i);
-    row.cells[10].innerHTML = vacan;
-    arr2.push(Number(vacan));
-
-    var k, sum = 0;
-    for (k = 0; k < i-1; k++) {
-        sum += Number(arr[k][1]);
+function getValue(column, year) {
+    callback = 'get' + column.replaceAll('_', ' ').ucwords().replaceAll(' ', '');
+    if (window[callback]) {
+        return window[callback](year);
     }
-    sum += Number(arr2[1]);
-    let mi = minu(sum, arr2[8]);
-    row.cells[11].innerHTML = mi;
-    arr2.push(Number(mi));
-    arr.push(arr2);
+    return 0
 }
-// const forloop = () => {
-//     let tabular = document.getElementById("tabular");
-//     let year = 2021;
-//     let count = 2;
-//     for (let i = 0; i < 11; i++) {
-//         let arr2 = [];
-//         let row = document.createElement("tr");
-//         for (let j = 0; j < 12; j++) {
-//             let column = document.createElement("td");
-//             column.id = i.toString() + " " + j.toString();
-//             column.className = "pt-3-half";
-//             if (j === 2) {
-//                 arr2.push(0);
-//                 //column.innerHTML = 0;
-//                 // console.log("hellooutside");
-//                 column.addEventListener("click", (event) => { changeHandler(event, i); });
-//                 column.setAttribute("contenteditable", true);
 
-//             }
-//             else
-//                 column.setAttribute("contenteditable", false);
-//             // if (j === 2 && year == 2022) {
-//             //     arr2.push(1);
-//             //     column.innerHTML = 1;
-//             //     // console.log("hellooutside");
-//             //     column.addEventListener("mouseout", (event) => { changeHandler(event, i); });
-//             //     column.setAttribute("contenteditable", true);
-//             // }
+function getSno(year) {
+    return getFromStore(SNO, year);
+}
 
-//             if (j === 0) {
-//                 column.innerHTML = count++;
-//             }
-//             if (j === 1) {
-//                 column.innerHTML = year++;
-//             }
-//             if (j == 3) {
-//                 let cash = cashFlow();
-//                 column.innerHTML = cash;
-//                 arr2.push(cash);
+function getYear(year) {
+    return getFromStore(PROP_YEAR, year);
+}
 
-//             }
-//             if (j == 4) {
-//                 let cumulatives = cumulativesyear(Number(arr2[0] + arr2[1]));
-//                 column.innerHTML = cumulatives;
-//                 arr2.push(cumulatives);
-//             }
-//             if (j === 5) {
-//                 let purch = purcha(arr2[0]);
-//                 column.innerHTML = purch;
-//                 arr2.push(Number(purch));
-//             }
-//             if (j === 6) {
-//                 let port = portfo(arr2[1]);
-//                 column.innerHTML = port;
-//                 arr2.push(Number(port));
-//             }
-//             if (j === 7) {
-//                 let project = projected(arr2[0], arr2[1]);
-//                 column.innerHTML = project;
-//                 arr2.push(Number(project));
-//             }
-//             if (j === 8) {
-//                 let equi = equit(arr2[2], arr2[5]);
-//                 column.innerHTML = equi;
-//                 arr2.push(Number(equi));
-//             }
-//             if (j === 9) {
-//                 let month = monthly(arr2[0], arr2[1]);
-//                 column.innerHTML = month;
-//                 arr2.push(Number(month));
-//             }
-//             if (j === 10) {
-//                 let vacan = vacancy(arr2[7]);
-//                 column.innerHTML = vacan;
-//                 arr2.push(Number(vacan));
-//             }
-//             if (j === 11) {
-//                 var k, sum = 0;
-//                 for (k = 0; k < arr.length; k++) {
-//                     sum += Number(arr[k][1]);
-//                 }
-//                 sum += Number(arr2[1]);
-//                 let mi = minu(sum, arr2[8]);
-//                 column.innerHTML = mi;
-//                 arr2.push(Number(mi));
-//             }
-//             row.appendChild(column);
-
-//         }
-//         tabular.appendChild(row);
-//         arr.push(arr2);
-
-//     }
-// }
-//ppty.addEventListener('change', show);
-
-
-const cashFlow = (i) => {
-    let vari = 0;
-    // console.log(arr[0][8]);
-    let ccf = Number(arr[arr.length - 1][8]);
-    var k, sum = 0;
-    for (k = 0; k < i-1; k++) {
-        sum += Number(arr[k][1]);
+// retrieve total cash funded properties till a year
+function getTotalCashFundedProperties(year) {
+    let total = 0;
+    for (let loop_year = start_year; loop_year <= year; loop_year++) {
+        total += getFromStore(CASH_FLOW_FUND_PROP, loop_year);
     }
-    let cffp = sum;
-    let paca = document.getElementById("paca");
-    paca = Number(paca.value);
-    if ((ccf - (cffp * paca)) > paca) {
-        vari = Math.round((ccf - (cffp * paca)) / paca, 0).toFixed(2);
+    return total;
+}
 
+// retrieve total properties purchased till year
+function getTotalPropertiesPurchased(year) {
+    let total = 0;
+    for (let loop_year = start_year; loop_year <= year; loop_year++) {
+        total += getFromStore(PROP_PURCHASED_YEAR, loop_year);
     }
-    return Number(vari);
+    return total;
 }
-const cumulativesyear = (sum,i) => {
-    let varia = 0;
-    var k;
-    for (k = 0; k < i-1; k++) {
-        sum += Number(arr[k][0]);
-        sum += Number(arr[k][1]);
+
+// retrieve sum of all owned properties till the year
+function getTotalPropertiesOwnedTillYear(year) {
+    return getTotalCashFundedProperties(year) + getTotalPropertiesPurchased(year);
+}
+
+// sum of properties in the current year
+function getTotalPropertiesInYear(year) {
+    return getPropPurchasedYear(year) + getCashFlowFundProp(year);
+}
+
+
+/** Properties purchased in that year **/
+function getPropPurchasedYear(year) {
+    return getFromStore(PROP_PURCHASED_YEAR, year)
+}
+
+/** Cash Flow-funded purchases **/
+function getCashFlowFundProp(year) {
+    let value = getFromStore(CASH_FLOW_FUND_PROP, year);
+    if (!value) {
+        value = (() => {
+            if (year === start_year) {
+                return 0;
+            } else {
+                const last_year = year - 1;
+                const cashFlowVacancy = getValue(CUMUL_CASH_FLOW_VAC, last_year);
+                const cashInHand = cashFlowVacancy - getTotalCashFundedProperties(year) * property_acquisition_cost
+                if (cashInHand > property_acquisition_cost) {
+                    return Math.floor(cashInHand / property_acquisition_cost);
+                } else {
+                    return 0;
+                }
+            }
+        })();
+        setInStore(CASH_FLOW_FUND_PROP, year, value);
     }
-    return Number(sum.toFixed(2));
+    return value
+}
 
-}
-const updateCumulativesyear = (cffi, vr, i, j) => {
-    console.log(typeof (cffi), typeof (vr), typeof (i), typeof (j));
 
-}
-const purcha = (i) => {
-    let paca = document.getElementById("paca");
-    paca = Number(paca.value);
-    return (paca * Number(i)).toFixed(2);
-}
-const portfo = (i) => {
-    let paca = document.getElementById("paca");
-    paca = Number(paca.value);
-    return (paca * Number(i)).toFixed(2);
-}
-const projected = (i, j,k) => {
-    let avgp = Number((document.getElementById("avgp")).value) / 100;
-    let pav = Number((document.getElementById("pav")).value);
-    return Number(arr[k-2][5] * (1 + avgp) + (Number(i) + Number(j)) * pav).toFixed(2);
-}
-const equit = (i, j) => {
-    let pav = Number((document.getElementById("pav")).value);
-    return (Number(j) - Number(i) * pav * (0.8)).toFixed(2);//portfolio total value-cumulative prop each year  
-}
-const monthly = (i, j,k) => {
-    return (Number(arr[k-2][7]) * (1 + Number(acfg.value) / 100) + (Number(i) + Number(j)) * Number(mcf.value)).toFixed(2);
-}
-const vacancy = (i,k) => {
-    return (Number(arr[k-2][8]) + Number(i) * 11).toFixed(2);
-}
-const minu = (i, j) => {
-    let paca = document.getElementById("paca");
-    paca = Number(paca.value);
-    return Number(j - i * paca).toFixed(2);
-
-    //return (Number(arr[arr.length-1][8])-(Number(arr[arr.length-1][1])+Number(i))*paca).toFixed(2);
-}
-const changeHandler = (event, i) => {
-    console.log(event.target.innerHTML);
-    console.log("i is" + i);
-    let vr = event.target.innerHTML;
-    let cff = arr[i + 2][1];
-    // console.log("hello");
-    show(event, event.target.innerHTML);
-}
-const lastTable = (arr2) => {
-    let end_state = document.getElementById("end_state");
-    let personal_cash = document.getElementById("personal_cash");
-    let portfolio_cash = document.getElementById("portfolio_cash");
-    let portfolio_gross = document.getElementById("portfolio_gross");
-    let portfolio_equity = document.getElementById("portfolio_equity");
-    let monthly_cash = document.getElementById("monthly_cash");
-let first = arr2[0];
-    let second = arr2[1];
-    let third = arr2[2];
-    let fourth = arr2[3];
-    let fifth = arr2[4];
-
-    let avgp = document.getElementById("avgp");
-
-    var end_state_sum = 0, personal_cash_sum = 0, port_cash_sum = 0;
-    for (k = 0; k < arr.length; k++) {
-        personal_cash_sum += Number(arr[k][3]);
-        port_cash_sum += Number(arr[k][4]);
+/** Cumulative Properties Owned In Each Year **/
+function getCumulativeOwnedEachYear(year) {
+    let value = getFromStore(CUMULATIVE_OWNED_EACH_YEAR, year);
+    if (!value) {
+        value = (() => {
+            if (year === start_year) {
+                return getPropPurchasedYear(year)
+            } else {
+                return getTotalPropertiesOwnedTillYear(year)
+            }
+        })();
+        setInStore(CUMULATIVE_OWNED_EACH_YEAR, year, value);
     }
-    port_cash_sum += Number(second);
-    end_state.innerHTML = Number(Number(arr[arr.length-1][2])+Number(first)).toFixed(0);
-    personal_cash.innerHTML = Number(personal_cash_sum).toFixed(0);
-    portfolio_cash.innerHTML = Number(port_cash_sum).toFixed(0);
-    portfolio_gross.innerHTML = ((arr[arr.length - 1][5] + Number(third))* Math.pow(1 + (Number(avgp.value) / 100),12)).toFixed(0);
-    portfolio_equity.innerHTML = (portfolio_gross.innerHTML - ((arr[arr.length - 1][5] + Number(third)) - (arr[arr.length - 1][6] + Number(fourth) - Number(second)))).toFixed(0)
-    monthly_cash.innerHTML = Number(Number(fifth) + arr[arr.length - 1][7]).toFixed(0);
-
-
-}   
-const secondLastTable = () => {
-    let first = document.getElementById("first");
-    let second = document.getElementById("sec");
-    let third = document.getElementById("third");
-    let fourth = document.getElementById("fourth");
-    let fifth = document.getElementById("fifth");
-
-    let paca = document.getElementById("paca");
-    paca = Number(paca.value);
-    let pav = document.getElementById("pav");
-    pav = Number(pav.value);
-    let mcf = document.getElementById("mcf");
-    mcf = Number(mcf.value);
-    let arr2 = [];
-    arr2.push(Number(Math.round((arr[arr.length - 1][5] * 0.71 - (arr[arr.length - 1][5] - arr[arr.length - 1][6])) / paca, 0)).toFixed(0));
-    arr2.push(Number(arr2[0] * paca).toFixed(0));
-    arr2.push(Number(arr2[0] * pav)).toFixed(0);
-    arr2.push(Number(arr2[2] * 0.2).toFixed(0));
-    arr2.push(Number(arr2[0] * mcf).toFixed(0));
-
-    first.innerHTML = arr2[0];
-    second.innerHTML = arr2[1];
-    third.innerHTML = arr2[2];
-    fourth.innerHTML = arr2[3];
-    fifth.innerHTML = arr2[4];
-    return arr2;
+    return value
 }
+
+/** Personal Cash Investment (approx) **/
+function getPersonalInvestment(year) {
+    let value = getFromStore(PERSONAL_INVESTMENT, year);
+
+    if (!value) {
+        value = (() => {
+            return getPropPurchasedYear(year) * property_acquisition_cost
+        })();
+        setInStore(PERSONAL_INVESTMENT, year, value);
+    }
+
+    return value
+}
+
+/** Portfolio Cash Re-Investment **/
+function getPortfolioCashReinvestment(year) {
+    let value = getFromStore(PORTFOLIO_CASH_REINVESTMENT, year);
+    if (!value) {
+        value = (() => {
+            return getCashFlowFundProp(year) * property_acquisition_cost
+        })();
+        setInStore(PORTFOLIO_CASH_REINVESTMENT, year, value);
+    }
+    return value
+}
+
+/** Projected Portfolio Total Value **/
+function getProjectedPortfolioTotalValue(year) {
+    let value = getFromStore(PROJECTED_PORTFOLIO_TOTAL_VALUE, year);
+    if (!value) {
+        value = (() => {
+            let totalPropertiesInYear = getTotalPropertiesInYear(year);
+            if (year === start_year) {
+                return (totalPropertiesInYear) * property_acquisition_value;
+            } else {
+                return (getProjectedPortfolioTotalValue(year - 1) * (1 + annual_value_growth / 100))
+                    + (totalPropertiesInYear * property_acquisition_value);
+            }
+        })();
+        setInStore(PROJECTED_PORTFOLIO_TOTAL_VALUE, year, value);
+    }
+    return value
+}
+
+/** Projected Total Equity **/
+function getProjectedTotalEquity(year) {
+    let value = getFromStore(PROJECTED_TOTAL_EQUITY, year);
+    if (!value) {
+        value = (() => {
+            return getProjectedPortfolioTotalValue(year) - (
+                getCumulativeOwnedEachYear(year) * property_acquisition_value * (1 - 0.2)
+            )
+        })();
+        setInStore(PROJECTED_TOTAL_EQUITY, year, value);
+    }
+    return value
+}
+
+/** Projected Monthly Cash Flow **/
+function getProjectedMonthlyCashFlow(year) {
+    let value = getFromStore(PROJECTED_MONTHLY_CASH_FLOW, year);
+    if (!value) {
+        value = (() => {
+            if (year === start_year) {
+                return getCumulativeOwnedEachYear(year) *
+                    (monthly_cash_flow * Math.pow(1 + (annual_cash_flow / 100), getSno(year) - 1));
+            } else {
+                return (getProjectedMonthlyCashFlow(year - 1) *
+                    (1 + (annual_cash_flow / 100))) +
+                    (getTotalPropertiesInYear(year) * monthly_cash_flow)
+            }
+        })();
+        setInStore(PROJECTED_MONTHLY_CASH_FLOW, year, value);
+    }
+    return value
+}
+
+/** Cumulative Cash Flow (Incl. Vacancy) **/
+function getCumulCashFlowVac(year) {
+    let value = getFromStore(CUMUL_CASH_FLOW_VAC, year);
+    if (!value) {
+        value = (() => {
+            if (year === start_year) {
+                return getProjectedMonthlyCashFlow(year) * 11
+            } else {
+                return getCumulCashFlowVac(year - 1) + (getProjectedMonthlyCashFlow(year) * 11)
+            }
+        })();
+        setInStore(CUMUL_CASH_FLOW_VAC, year, value);
+    }
+    return value
+}
+
+/** Cumulative Cash Flow (minus reinvestments) **/
+function getCumulCashFlowMinusReinvest(year) {
+    let value = getFromStore(CUMUL_CASH_FLOW_MINUS_REINVEST, year);
+    if (!value) {
+        value = (() => {
+            if (year === start_year) {
+                return getCumulCashFlowVac(year) - (getCashFlowFundProp(year) * property_acquisition_cost)
+            } else {
+                return getCumulCashFlowVac(year) - (getTotalCashFundedProperties(year) * property_acquisition_cost)
+            }
+        })();
+        setInStore(CUMUL_CASH_FLOW_MINUS_REINVEST, year, value);
+    }
+    return value
+}
+
+function getLastYearOfCalculation() {
+    return start_year + rows - 1;
+}
+
+/********* 12 year information *******/
+function get12YearProperties() {
+    let last_year = getLastYearOfCalculation();
+    let portfolioTotalValue = getValue(PROJECTED_PORTFOLIO_TOTAL_VALUE, last_year);
+    let totalEquity = getValue(PROJECTED_TOTAL_EQUITY, last_year);
+    return Math.floor(
+        ((portfolioTotalValue * 0.71) - (portfolioTotalValue - totalEquity)) / property_acquisition_cost
+    );
+}
+
+function get12YearReinvestment() {
+    return get12YearProperties() * property_acquisition_cost
+}
+
+function get12YearPortfolioValue() {
+    return get12YearProperties() * property_acquisition_value
+}
+
+function get12YearEquity() {
+    return Math.round(get12YearPortfolioValue() * 0.2)
+}
+
+function get12YearMonthlyCash() {
+    return get12YearProperties() * monthly_cash_flow
+}
+
+
+/********* 24 year information *******/
+
+function get24YearProperties() {
+    let last_year = getLastYearOfCalculation();
+    return getTotalPropertiesPurchased(last_year) + get12YearProperties();
+}
+
+function get24YearCashFundedProperties() {
+    let last_year = getLastYearOfCalculation();
+    return getTotalCashFundedProperties(last_year)
+}
+
+function get24YearTotalProperties() {
+    return get24YearProperties() + get24YearCashFundedProperties();
+}
+
+function get24YearPersonalInvestment() {
+    let personalInvestment = 0
+    for (let year = start_year; year < start_year + rows; year++) {
+        personalInvestment += getValue(PERSONAL_INVESTMENT, year);
+    }
+    return personalInvestment
+}
+
+function get24YearPortfolioInvestment() {
+    let portfolioInvestment = 0
+    for (let year = start_year; year < start_year + rows; year++) {
+        portfolioInvestment += getValue(PORTFOLIO_CASH_REINVESTMENT, year);
+    }
+    return portfolioInvestment + get12YearReinvestment()
+}
+
+function get24YearPortfolioGross() {
+    let last_year = getLastYearOfCalculation();
+    return Math.floor((getValue(PROJECTED_PORTFOLIO_TOTAL_VALUE, last_year) + get12YearPortfolioValue())
+        * Math.pow(1 + (annual_value_growth / 100), 12));
+}
+
+function get24YearPortfolioEquity() {
+    let last_year = getLastYearOfCalculation();
+    return Math.floor(get24YearPortfolioGross() -
+        (
+            (getValue(PROJECTED_PORTFOLIO_TOTAL_VALUE, last_year) + get12YearPortfolioValue())
+            -
+            (getValue(PROJECTED_TOTAL_EQUITY, last_year) + get12YearEquity() - get12YearReinvestment())
+        ))
+}
+
+function get24YearProjectedMonthlyCash() {
+    let last_year = getLastYearOfCalculation();
+    createBarChart();
+    createLineChart();
+    return Math.floor(getValue(PROJECTED_MONTHLY_CASH_FLOW, last_year) + get12YearMonthlyCash());
+}
+
+// Charts sarts from here
+
+function createBarChart() {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'pie',
+
+        // The data for our dataset
+        data: {
+            labels: ['Properties', 'Cash Flow Funded Properties', 'Total End State Properties'],
+            datasets: [{
+                label: 'My First dataset',
+                data: [
+                    get24YearProperties(), get24YearCashFundedProperties(), get24YearTotalProperties()
+                ],
+                backgroundColor: [
+                    window.chartColors.red,
+                    window.chartColors.blue,
+                    window.chartColors.yellow
+                ]
+            }]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
+}
+
+// Line Charts
+
+function createLineChart() {
+    var config = {
+        type: 'line',
+        data: {
+            labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031'],
+            datasets: [{
+                label: 'Portfolio Cash Re-Investment',
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                data: [
+                    getPortfolioCashReinvestment(2020),
+                    getPortfolioCashReinvestment(2021),
+                    getPortfolioCashReinvestment(2022),
+                    getPortfolioCashReinvestment(2023),
+                    getPortfolioCashReinvestment(2024),
+                    getPortfolioCashReinvestment(2025),
+                    getPortfolioCashReinvestment(2026),
+                    getPortfolioCashReinvestment(2027),
+                    getPortfolioCashReinvestment(2028),
+                    getPortfolioCashReinvestment(2029),
+                    getPortfolioCashReinvestment(2030),
+                    getPortfolioCashReinvestment(2031)
+                ],
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Year'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Portfolio Cash Re-Investment'
+                    }
+                }]
+            }
+        }
+    };
+    var ctx = document.getElementById('cash-reinvestment-line').getContext('2d');
+    window.myLine = new Chart(ctx, config);
+
+    var projected_config = {
+        type: 'line',
+        data: {
+            labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031'],
+            datasets: [{
+                label: 'Projected Portfolio Total Value',
+                backgroundColor: window.chartColors.green,
+                borderColor: window.chartColors.green,
+                data: [
+                    getProjectedPortfolioTotalValue(2020),
+                    getProjectedPortfolioTotalValue(2021),
+                    getProjectedPortfolioTotalValue(2022),
+                    getProjectedPortfolioTotalValue(2023),
+                    getProjectedPortfolioTotalValue(2024),
+                    getProjectedPortfolioTotalValue(2025),
+                    getProjectedPortfolioTotalValue(2026),
+                    getProjectedPortfolioTotalValue(2027),
+                    getProjectedPortfolioTotalValue(2028),
+                    getProjectedPortfolioTotalValue(2029),
+                    getProjectedPortfolioTotalValue(2030),
+                    getProjectedPortfolioTotalValue(2031)
+                ],
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Year'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Projected Portfolio Total Value'
+                    }
+                }]
+            }
+        }
+    };
+    var projected_ctx = document.getElementById('projected-protfolio-line').getContext('2d');
+    window.myLine = new Chart(projected_ctx, projected_config);
+
+    var projected_equity_config = {
+        type: 'line',
+        data: {
+            labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031'],
+            datasets: [{
+                label: 'Projected Total Equity',
+                backgroundColor: window.chartColors.purple,
+                borderColor: window.chartColors.purple,
+                data: [
+                    getProjectedTotalEquity(2020),
+                    getProjectedTotalEquity(2021),
+                    getProjectedTotalEquity(2022),
+                    getProjectedTotalEquity(2023),
+                    getProjectedTotalEquity(2024),
+                    getProjectedTotalEquity(2025),
+                    getProjectedTotalEquity(2026),
+                    getProjectedTotalEquity(2027),
+                    getProjectedTotalEquity(2028),
+                    getProjectedTotalEquity(2029),
+                    getProjectedTotalEquity(2030),
+                    getProjectedTotalEquity(2031)
+                ],
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Year'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Projected Total Equity'
+                    }
+                }]
+            }
+        }
+    };
+    var projected_equity_ctx = document.getElementById('projected-total-equity-line').getContext('2d');
+    window.myLine = new Chart(projected_equity_ctx, projected_equity_config);
+
+    var projected_monthly_config = {
+        type: 'line',
+        data: {
+            labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031'],
+            datasets: [{
+                label: 'Projected Monthly Cash Flow',
+                backgroundColor: window.chartColors.yellow,
+                borderColor: window.chartColors.yellow,
+                data: [
+                    getProjectedMonthlyCashFlow(2020),
+                    getProjectedMonthlyCashFlow(2021),
+                    getProjectedMonthlyCashFlow(2022),
+                    getProjectedMonthlyCashFlow(2023),
+                    getProjectedMonthlyCashFlow(2024),
+                    getProjectedMonthlyCashFlow(2025),
+                    getProjectedMonthlyCashFlow(2026),
+                    getProjectedMonthlyCashFlow(2027),
+                    getProjectedMonthlyCashFlow(2028),
+                    getProjectedMonthlyCashFlow(2029),
+                    getProjectedMonthlyCashFlow(2030),
+                    getProjectedMonthlyCashFlow(2031)
+                ],
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Year'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Projected Monthly Cash Flow'
+                    }
+                }]
+            }
+        }
+    };
+    var projected_monthly_ctx = document.getElementById('projected-monthly-cash-line').getContext('2d');
+    window.myLine = new Chart(projected_monthly_ctx, projected_monthly_config);
+
+    var cumulative_cash_config = {
+        type: 'line',
+        data: {
+            labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031'],
+            datasets: [{
+                label: 'Cumulative Cash Flow (Incl. Vacancy)',
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                data: [
+                    getCumulCashFlowVac(2020),
+                    getCumulCashFlowVac(2021),
+                    getCumulCashFlowVac(2022),
+                    getCumulCashFlowVac(2023),
+                    getCumulCashFlowVac(2024),
+                    getCumulCashFlowVac(2025),
+                    getCumulCashFlowVac(2026),
+                    getCumulCashFlowVac(2027),
+                    getCumulCashFlowVac(2028),
+                    getCumulCashFlowVac(2029),
+                    getCumulCashFlowVac(2030),
+                    getCumulCashFlowVac(2031)
+                ],
+                fill: false,
+            }, {
+                label: 'Cumulative Cash Flow (minus reinvestments)',
+                backgroundColor: window.chartColors.blue,
+                borderColor: window.chartColors.blue,
+                data: [
+                    getCumulCashFlowMinusReinvest(2020),
+                    getCumulCashFlowMinusReinvest(2021),
+                    getCumulCashFlowMinusReinvest(2022),
+                    getCumulCashFlowMinusReinvest(2023),
+                    getCumulCashFlowMinusReinvest(2024),
+                    getCumulCashFlowMinusReinvest(2025),
+                    getCumulCashFlowMinusReinvest(2026),
+                    getCumulCashFlowMinusReinvest(2027),
+                    getCumulCashFlowMinusReinvest(2028),
+                    getCumulCashFlowMinusReinvest(2029),
+                    getCumulCashFlowMinusReinvest(2030),
+                    getCumulCashFlowMinusReinvest(2031)
+                ],
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Year'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Cumulative Cash Flow'
+                    }
+                }]
+            }
+        }
+    };
+    var cumulative_cash_ctx = document.getElementById('cumulative-cash-line').getContext('2d');
+    window.myLine = new Chart(cumulative_cash_ctx, cumulative_cash_config);
+}
+
 
