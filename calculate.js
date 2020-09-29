@@ -37,7 +37,7 @@ var data = [
     { x: "Two or More Races", value: 9009073 }
 ];
 
-// formatted value function
+// formatted value
 function getFormattedAmount(amount){
     var formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -161,16 +161,12 @@ function calculatedInvestment() {
         for (let column of columns) {
             let id = column + '-' + year;
             let cell = $('#' + id);
-            // const value  = getValue(column, year);
-
-            // const formattedValue = getFormattedValue(value)
-
             if (cell.is('input')) {
                 cell.val(parseInt(getValue(column, year)))
             } else {
                 if (column !== 'sno' && column !== 'year' && column !== 'prop_purchased_year'  && column !== 'cash_flow_fund_prop'
                     && column !== 'cumulative_owned_each_year' )
-                    // FormattedAmout function call
+                    // call Formatted Value
                     cell.text(getFormattedAmount(parseInt(getValue(column, year))));
                 else
                     cell.text(parseInt(getValue(column, year)));
@@ -602,6 +598,249 @@ function createLineChart() {
     };
     var ctx = document.getElementById('cash-reinvestment-line').getContext('2d');
     window.myLine = new Chart(ctx, config);
+
+    var projected_config = {
+        type: 'line',
+        data: {
+            labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031'],
+            datasets: [{
+                label: 'Projected Portfolio Total Value',
+                backgroundColor: window.chartColors.green,
+                borderColor: window.chartColors.green,
+                data: [
+                    getProjectedPortfolioTotalValue(2020),
+                    getProjectedPortfolioTotalValue(2021),
+                    getProjectedPortfolioTotalValue(2022),
+                    getProjectedPortfolioTotalValue(2023),
+                    getProjectedPortfolioTotalValue(2024),
+                    getProjectedPortfolioTotalValue(2025),
+                    getProjectedPortfolioTotalValue(2026),
+                    getProjectedPortfolioTotalValue(2027),
+                    getProjectedPortfolioTotalValue(2028),
+                    getProjectedPortfolioTotalValue(2029),
+                    getProjectedPortfolioTotalValue(2030),
+                    getProjectedPortfolioTotalValue(2031)
+                ],
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Year'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Projected Portfolio Total Value'
+                    }
+                }]
+            }
+        }
+    };
+    var projected_ctx = document.getElementById('projected-protfolio-line').getContext('2d');
+    window.myLine = new Chart(projected_ctx, projected_config);
+
+    var projected_equity_config = {
+        type: 'line',
+        data: {
+            labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031'],
+            datasets: [{
+                label: 'Projected Total Equity',
+                backgroundColor: window.chartColors.purple,
+                borderColor: window.chartColors.purple,
+                data: [
+                    getProjectedTotalEquity(2020),
+                    getProjectedTotalEquity(2021),
+                    getProjectedTotalEquity(2022),
+                    getProjectedTotalEquity(2023),
+                    getProjectedTotalEquity(2024),
+                    getProjectedTotalEquity(2025),
+                    getProjectedTotalEquity(2026),
+                    getProjectedTotalEquity(2027),
+                    getProjectedTotalEquity(2028),
+                    getProjectedTotalEquity(2029),
+                    getProjectedTotalEquity(2030),
+                    getProjectedTotalEquity(2031)
+                ],
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Year'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Projected Total Equity'
+                    }
+                }]
+            }
+        }
+    };
+    var projected_equity_ctx = document.getElementById('projected-total-equity-line').getContext('2d');
+    window.myLine = new Chart(projected_equity_ctx, projected_equity_config);
+
+    var projected_monthly_config = {
+        type: 'line',
+        data: {
+            labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031'],
+            datasets: [{
+                label: 'Projected Monthly Cash Flow',
+                backgroundColor: window.chartColors.yellow,
+                borderColor: window.chartColors.yellow,
+                data: [
+                    getProjectedMonthlyCashFlow(2020),
+                    getProjectedMonthlyCashFlow(2021),
+                    getProjectedMonthlyCashFlow(2022),
+                    getProjectedMonthlyCashFlow(2023),
+                    getProjectedMonthlyCashFlow(2024),
+                    getProjectedMonthlyCashFlow(2025),
+                    getProjectedMonthlyCashFlow(2026),
+                    getProjectedMonthlyCashFlow(2027),
+                    getProjectedMonthlyCashFlow(2028),
+                    getProjectedMonthlyCashFlow(2029),
+                    getProjectedMonthlyCashFlow(2030),
+                    getProjectedMonthlyCashFlow(2031)
+                ],
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Year'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Projected Monthly Cash Flow'
+                    }
+                }]
+            }
+        }
+    };
+    var projected_monthly_ctx = document.getElementById('projected-monthly-cash-line').getContext('2d');
+    window.myLine = new Chart(projected_monthly_ctx, projected_monthly_config);
+
+    var cumulative_cash_config = {
+        type: 'line',
+        data: {
+            labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031'],
+            datasets: [{
+                label: 'Cumulative Cash Flow (Incl. Vacancy)',
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                data: [
+                    getCumulCashFlowVac(2020),
+                    getCumulCashFlowVac(2021),
+                    getCumulCashFlowVac(2022),
+                    getCumulCashFlowVac(2023),
+                    getCumulCashFlowVac(2024),
+                    getCumulCashFlowVac(2025),
+                    getCumulCashFlowVac(2026),
+                    getCumulCashFlowVac(2027),
+                    getCumulCashFlowVac(2028),
+                    getCumulCashFlowVac(2029),
+                    getCumulCashFlowVac(2030),
+                    getCumulCashFlowVac(2031)
+                ],
+                fill: false,
+            }, {
+                label: 'Cumulative Cash Flow (minus reinvestments)',
+                backgroundColor: window.chartColors.blue,
+                borderColor: window.chartColors.blue,
+                data: [
+                    getCumulCashFlowMinusReinvest(2020),
+                    getCumulCashFlowMinusReinvest(2021),
+                    getCumulCashFlowMinusReinvest(2022),
+                    getCumulCashFlowMinusReinvest(2023),
+                    getCumulCashFlowMinusReinvest(2024),
+                    getCumulCashFlowMinusReinvest(2025),
+                    getCumulCashFlowMinusReinvest(2026),
+                    getCumulCashFlowMinusReinvest(2027),
+                    getCumulCashFlowMinusReinvest(2028),
+                    getCumulCashFlowMinusReinvest(2029),
+                    getCumulCashFlowMinusReinvest(2030),
+                    getCumulCashFlowMinusReinvest(2031)
+                ],
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Year'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Cumulative Cash Flow'
+                    }
+                }]
+            }
+        }
+    };
+    var cumulative_cash_ctx = document.getElementById('cumulative-cash-line').getContext('2d');
+    window.myLine = new Chart(cumulative_cash_ctx, cumulative_cash_config);
 }
 
 
