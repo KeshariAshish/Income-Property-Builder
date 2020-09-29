@@ -37,6 +37,15 @@ var data = [
     { x: "Two or More Races", value: 9009073 }
 ];
 
+// formatted value function
+function getFormattedAmount(amount){
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+    return formatter.format(amount);
+}
+
 window.chartColors = {
     red: 'rgb(255, 99, 132)',
     orange: 'rgb(255, 159, 64)',
@@ -148,24 +157,24 @@ function calculatedInvestment() {
         return
     }
     refreshDataStore();
-    var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    });
     for (let year = start_year; year < start_year + rows; year++) {
         for (let column of columns) {
             let id = column + '-' + year;
             let cell = $('#' + id);
+            // const value  = getValue(column, year);
+
+            // const formattedValue = getFormattedValue(value)
+
             if (cell.is('input')) {
                 cell.val(parseInt(getValue(column, year)))
             } else {
-                // $ sign for first table
-                if (column !== 'sno' && column !== 'year' && column !== 'PROP_PURCHASED_YEAR'.toLowerCase()  && column !== 'CASH_FLOW_FUND_PROP'.toLowerCase() 
-                    && column !== 'CUMULATIVE_OWNED_EACH_YEAR'.toLowerCase() )
-                    cell.text(formatter.format(parseInt(getValue(column, year))));
-                else{
+                if (column !== 'sno' && column !== 'year' && column !== 'prop_purchased_year'  && column !== 'cash_flow_fund_prop'
+                    && column !== 'cumulative_owned_each_year' )
+                    // FormattedAmout function call
+                    cell.text(getFormattedAmount(parseInt(getValue(column, year))));
+                else
                     cell.text(parseInt(getValue(column, year)));
-                }
+
             }
         }
     }
@@ -173,79 +182,50 @@ function calculatedInvestment() {
     $('#properties-12').text(get12YearProperties())
 
     $('#cash-reinvestment-12').text(get12YearReinvestment())
-    var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    });
     var amount = document.getElementById('cash-reinvestment-12').innerHTML;
-    document.getElementById('cash-reinvestment-12').innerHTML = formatter.format(amount);
+    document.getElementById('cash-reinvestment-12').innerHTML = getFormattedAmount(amount);
 
     $('#portfolio-value-12').text(get12YearPortfolioValue())
-    var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    });
     var amount = document.getElementById('portfolio-value-12').innerHTML;
-    document.getElementById('portfolio-value-12').innerHTML = formatter.format(amount);
+    document.getElementById('portfolio-value-12').innerHTML = getFormattedAmount(amount);
 
     $('#projected-total-equity-12').text(get12YearEquity())
-    var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    });
+
     var amount = document.getElementById('projected-total-equity-12').innerHTML;
-    document.getElementById('projected-total-equity-12').innerHTML = formatter.format(amount);
+    document.getElementById('projected-total-equity-12').innerHTML = getFormattedAmount(amount);
 
     $('#projected-month-cash-12').text(get12YearMonthlyCash())
-    var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    });
+   
     var amount = document.getElementById('projected-month-cash-12').innerHTML;
-    document.getElementById('projected-month-cash-12').innerHTML = formatter.format(amount);
+    document.getElementById('projected-month-cash-12').innerHTML = getFormattedAmount(amount);
 
     $('#properties-24').text(get24YearProperties())
     $('#cash-funded-24').text(get24YearCashFundedProperties())
     $('#total-properties-24').text(get24YearTotalProperties())
     $('#total-personal-investment-24').text(get24YearPersonalInvestment())
-    var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    });
+   
     var amount = document.getElementById('total-personal-investment-24').innerHTML;
-    document.getElementById('total-personal-investment-24').innerHTML = formatter.format(amount);
+    document.getElementById('total-personal-investment-24').innerHTML = getFormattedAmount(amount);
 
     $('#total-portfolio-investment-24').text(get24YearPortfolioInvestment())
-    var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    });
+
     var amount = document.getElementById('total-portfolio-investment-24').innerHTML;
-    document.getElementById('total-portfolio-investment-24').innerHTML = formatter.format(amount);
+    document.getElementById('total-portfolio-investment-24').innerHTML = getFormattedAmount(amount);
 
     $('#total-portfolio-gross-24').text(get24YearPortfolioGross())
-    var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    });
+  
     var amount = document.getElementById('total-portfolio-gross-24').innerHTML;
-    document.getElementById('total-portfolio-gross-24').innerHTML = formatter.format(amount);
+    document.getElementById('total-portfolio-gross-24').innerHTML = getFormattedAmount(amount);
 
     $('#total-portfolio-equity-24').text(get24YearPortfolioEquity())
-    var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    });
+  
     var amount = document.getElementById('total-portfolio-equity-24').innerHTML;
-    document.getElementById('total-portfolio-equity-24').innerHTML = formatter.format(amount);
+    document.getElementById('total-portfolio-equity-24').innerHTML = getFormattedAmount(amount);
 
     $('#total-monthly-cash-24').text(get24YearProjectedMonthlyCash())
-    var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    });
+
     var amount = document.getElementById('total-monthly-cash-24').innerHTML;
-    document.getElementById('total-monthly-cash-24').innerHTML = formatter.format(amount);
+    document.getElementById('total-monthly-cash-24').innerHTML = getFormattedAmount(amount);
 
 }
 
@@ -540,9 +520,6 @@ function get24YearProjectedMonthlyCash() {
     createLineChart();
     return Math.floor(getValue(PROJECTED_MONTHLY_CASH_FLOW, last_year) + get12YearMonthlyCash());
 }
-
-// Charts sarts from here
-
 function createBarChart() {
     var ctx = document.getElementById('myChart').getContext('2d');
     var chart = new Chart(ctx, {
@@ -569,9 +546,6 @@ function createBarChart() {
         options: {}
     });
 }
-
-// Line Charts
-
 function createLineChart() {
     var config = {
         type: 'line',
